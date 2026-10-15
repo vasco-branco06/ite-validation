@@ -2,6 +2,7 @@
 
 - Source: one outside person (not the maintainer). Name not recorded.
 - Given to the maintainer on 2026-10-15.
+- The "Idea 1" section refers to the old idea 1 (log files to Jira), replaced on 2026-10-15 by the email triage agent.
 - She wrote them with her own AI tool. In her words, they are general tests she already runs, offered as help.
 - They were not written from IDEA.md alone, there are more than 10 per idea, and one refers to a "rule 2" that is not in IDEA.md.
 - Therefore they are NOT FROZEN-TESTS.md under specs/validation-ab.md and are NOT used to score version A or B.
