@@ -4,7 +4,7 @@ Recorded runs for the tests that need real Claude Code sessions (rule 05 section
 
 ## 2026-10-15, batch 1
 
-Setup: Claude Code 2.1.293, default model, Windows 11. Each user turn is one `claude -p` call resuming the same session, run in a fresh temp folder. Isolation: `--setting-sources project,local --plugin-dir <ITE plugin> --strict-mcp-config`, so no user CLAUDE.md and no other plugins load. Transcripts: `runs/2026-10-15/`. Compiled folders: `runs/2026-10-15/folders/`. Cost: about 21 USD over 50 calls (R0 included), plus 5.87 USD for batch 2.
+Setup: Claude Code 2.1.293, default model, Windows 11. Each user turn is one `claude -p` call resuming the same session, run in a fresh temp folder. Isolation: `--setting-sources project,local --plugin-dir <ITE plugin> --strict-mcp-config`, so no user CLAUDE.md and no other plugins load. Transcripts: `runs/2026-10-15/`. Compiled folders: `runs/2026-10-15/folders/`. Cost: `total_cost_usd` from `claude -p --output-format json` summed to about 21 USD over 50 calls (R0 included), plus 5.87 USD for batch 2 and about 2.9 USD for the R7 manual-mode compile. These are client-side list-price estimates (https://code.claude.com/docs/en/headless); the runs used the maintainer's subscription plan, so they were not billed in dollars.
 
 | Run | What | Turns |
 |---|---|---|
