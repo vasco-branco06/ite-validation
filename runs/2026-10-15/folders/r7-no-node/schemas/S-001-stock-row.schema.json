@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-001",
+  "title": "StockRow",
+  "description": "One product row in the Stock tab. Used by R-001.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["product", "quantity", "minimum"],
+  "properties": {
+    "product": { "type": "string", "minLength": 1, "description": "Product name, column A" },
+    "quantity": { "type": "number", "description": "Units in stock now, column B" },
+    "minimum": { "type": "number", "minimum": 0, "description": "Alert threshold, column C" }
+  }
+}

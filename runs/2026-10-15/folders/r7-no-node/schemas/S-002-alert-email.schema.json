@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-002",
+  "title": "AlertEmail",
+  "description": "Content of one daily alert email. Used by R-004.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["to", "date", "low_products", "problem_rows"],
+  "properties": {
+    "to": { "type": "string", "format": "email" },
+    "date": { "type": "string", "format": "date" },
+    "low_products": { "type": "array", "items": { "$ref": "#/$defs/LowProduct" } },
+    "problem_rows": { "type": "array", "items": { "$ref": "#/$defs/ProblemRow" } }
+  },
+  "$defs": {
+    "LowProduct": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row", "product", "quantity", "minimum"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 2 },
+        "product": { "type": "string", "minLength": 1 },
+        "quantity": { "type": "number" },
+        "minimum": { "type": "number", "minimum": 0 }
+      }
+    },
+    "ProblemRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row", "product", "problem"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 2 },
+        "product": { "type": "string" },
+        "problem": { "type": "string", "enum": ["quantity_invalid", "minimum_invalid", "duplicate_product"] }
+      }
+    }
+  }
+}

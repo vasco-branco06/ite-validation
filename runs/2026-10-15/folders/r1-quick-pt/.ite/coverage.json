@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "idea": "um agente que lê logs de erro e abre tickets no Jira",
+  "language": "pt",
+  "created_at": "2026-10-15T17:39:39.608Z",
+  "updated_at": "2026-10-15T17:41:33.563Z",
+  "approved_at": "2026-10-15T17:41:33.562Z",
+  "mode": "scripted",
+  "question_budget": 5,
+  "areas": [
+    {
+      "id": "goal",
+      "state": "clear",
+      "summary": "Reads error logs and opens Jira tickets; success = every new error produces a Jira ticket within 15 minutes, with no duplicates for the same error.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "users",
+      "state": "clear",
+      "summary": "The support team, 2-3 people, already use Jira daily and handle the tickets; non-engineer to moderate technical level.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "scope",
+      "state": "clear",
+      "summary": "v1 reads error logs and creates Jira tickets. Out of scope: fixing errors, closing or editing existing tickets, Slack/email alerts.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "inputs",
+      "state": "clear",
+      "summary": "Plain-text error log files in a folder on the server, read every 10 minutes, up to about 50 MB per day.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "outputs",
+      "state": "clear",
+      "summary": "One Jira Bug per distinct error in the support project: short title, summary, log excerpt, timestamp, occurrence count, suggested priority; read by the support team.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "integrations",
+      "state": "assumed",
+      "summary": "Connects to Jira Cloud REST API with an API token. If Jira is down, tickets wait in a local queue, retried 3 times with growing intervals, then an alert is written to the agent log. Test: if Jira returns 503, no ticket is lost and there are at most 3 retries.",
+      "decision_ids": [
+        "D-001"
+      ],
+      "test_ids": [
+        "T-001"
+      ],
+      "reason": null
+    },
+    {
+      "id": "security",
+      "state": "assumed",
+      "summary": "Read-only access to the log folder; create-only access to Jira issues in the support project (no edit, close or delete). Secrets (Jira token, LLM API key) live in .env, never in code or logs. Test: if the code and agent logs are searched for the tokens, none are found, and an attempt to edit an existing ticket is refused.",
+      "decision_ids": [
+        "D-002"
+      ],
+      "test_ids": [
+        "T-002"
+      ],
+      "reason": null
+    },
+    {
+      "id": "stack",
+      "state": "assumed",
+      "summary": "Python 3.12 script run every 10 minutes by cron (or Windows Task Scheduler) on the same server as the logs; chosen for simple file handling and mature Jira/LLM libraries. Test: if the scheduler runs it, one run over a 50 MB log finishes in under 5 minutes.",
+      "decision_ids": [
+        "D-003"
+      ],
+      "test_ids": [
+        "T-003"
+      ],
+      "reason": null
+    },
+    {
+      "id": "llm",
+      "state": "assumed",
+      "summary": "One LLM step (Claude Haiku 5.5, claude-haiku-5-5) groups new error lines into distinct errors and writes title, summary and suggested priority; output is JSON {title, summary, priority: Highest|High|Medium|Low, fingerprint}. Test: if the model returns invalid JSON, the ticket is still created with a plain title from the log line and priority Medium.",
+      "decision_ids": [
+        "D-004"
+      ],
+      "test_ids": [
+        "T-004"
+      ],
+      "reason": null
+    },
+    {
+      "id": "errors",
+      "state": "assumed",
+      "summary": "Failure cases: (1) Jira down -> queue and retry 3 times; (2) wrong Jira credentials -> stop and alert, no retries; (3) empty or missing log file -> skip silently; (4) same error repeated -> update occurrence count in memory, no new ticket; (5) LLM fails or returns bad JSON -> fallback plain ticket; (6) unreadable/binary line -> skip and count. Test: if the same error appears 100 times in 10 minutes, exactly one ticket exists.",
+      "decision_ids": [
+        "D-005"
+      ],
+      "test_ids": [
+        "T-005"
+      ],
+      "reason": null
+    },
+    {
+      "id": "acceptance",
+      "state": "assumed",
+      "summary": "One Given/When/Then per requirement and per failure case, plus one happy path: Given a log file with a new error, when the agent runs, then one Jira Bug with all fields exists within 15 minutes. Test: if the happy-path test runs against a Jira test project, the ticket has title, summary, log excerpt, timestamp, count and priority.",
+      "decision_ids": [
+        "D-006"
+      ],
+      "test_ids": [
+        "T-006"
+      ],
+      "reason": null
+    },
+    {
+      "id": "done",
+      "state": "assumed",
+      "summary": "Done when: all acceptance tests pass; every new error produces one ticket within 15 minutes with no duplicates; the support team ran it on last week's logs and the tickets looked right. Test: if it runs on last week's logs, the number of tickets equals the number of distinct errors and the team confirms them.",
+      "decision_ids": [
+        "D-007"
+      ],
+      "test_ids": [
+        "T-007"
+      ],
+      "reason": null
+    }
+  ],
+  "history": [
+    {
+      "n": 1,
+      "kind": "question",
+      "area": "goal",
+      "question": "Como sabes que o agente está a funcionar bem: o que tem de acontecer a cada erro novo nos logs?",
+      "recommended": "Cada erro novo gera um ticket no Jira em menos de 15 minutos, sem duplicados para o mesmo erro.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:39:50.739Z"
+    },
+    {
+      "n": 2,
+      "kind": "question",
+      "area": "users",
+      "question": "Quem vai ver e tratar estes tickets no dia a dia?",
+      "recommended": "A tua equipa de suporte, 2 a 3 pessoas, que já usa o Jira todos os dias.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:40:06.361Z"
+    },
+    {
+      "n": 3,
+      "kind": "question",
+      "area": "scope",
+      "question": "O que fica de fora da primeira versão?",
+      "recommended": "Não corrige erros, não fecha nem edita tickets existentes, e não envia alertas por Slack ou email.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:40:18.641Z"
+    },
+    {
+      "n": 4,
+      "kind": "question",
+      "area": "inputs",
+      "question": "De onde vêm os logs de erro e de quanto em quanto tempo o agente os deve ler?",
+      "recommended": "Ficheiros de texto numa pasta do servidor, lidos a cada 10 minutos, até cerca de 50 MB por dia.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:40:31.206Z"
+    },
+    {
+      "n": 5,
+      "kind": "question",
+      "area": "outputs",
+      "question": "O que deve ter cada ticket no Jira?",
+      "recommended": "Um Bug no projeto de suporte, com título curto do erro, resumo, excerto do log, data/hora, número de ocorrências e prioridade sugerida.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:40:43.383Z"
+    },
+    {
+      "n": 6,
+      "kind": "stop_offer",
+      "area": "stop",
+      "question": "Queres que eu assuma o resto? Cada suposição terá um teste que vais aprovar.",
+      "recommended": "Sim",
+      "answer": null,
+      "accepted_recommendation": false,
+      "at": "2026-10-15T17:40:58.881Z"
+    }
+  ],
+  "stop_reason": "user_stopped"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-001",
+  "title": "VacationRequest",
+  "description": "A stored vacation request with its status. Used by R-003.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "requesterEmail", "requesterName", "startDate", "endDate", "status", "createdAt"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "requesterEmail": { "type": "string", "format": "email" },
+    "requesterName": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "startDate": { "type": "string", "format": "date" },
+    "endDate": { "type": "string", "format": "date" },
+    "comment": { "type": "string", "maxLength": 500 },
+    "status": { "type": "string", "enum": ["pending", "approved", "rejected", "cancelled"] },
+    "decisionReason": { "type": "string", "maxLength": 500 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "decidedAt": { "type": "string", "format": "date-time" }
+  }
+}

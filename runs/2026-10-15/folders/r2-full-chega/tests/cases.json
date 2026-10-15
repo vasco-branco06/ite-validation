@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "T-001",
+      "title": "A team member who is not the manager cannot approve a request",
+      "proves": ["R-012", "D-001"],
+      "kind": "integration",
+      "given": "A pending request and a signed-in team member whose email is not MANAGER_EMAIL",
+      "when": "That team member sends an approve decision for the request",
+      "then": ["The app refuses with a not-allowed response", "The request stays pending"],
+      "schema": "S-003",
+      "input": { "requestId": "req-1", "decision": "approve" },
+      "phase": "F-3.4"
+    },
+    {
+      "id": "T-002",
+      "title": "A visitor who is not signed in is sent to Google sign-in",
+      "proves": ["R-002", "D-002"],
+      "kind": "e2e",
+      "given": "A browser with no session",
+      "when": "It opens the app's home page or the manager's pending list",
+      "then": ["It is redirected to the Google sign-in page", "No request data appears in the page"],
+      "phase": "F-3.1"
+    },
+    {
+      "id": "T-003",
+      "title": "A request with the end date before the start date is rejected",
+      "proves": ["R-004", "D-003"],
+      "kind": "integration",
+      "given": "A signed-in team member",
+      "when": "They submit start date 2026-08-10 and end date 2026-08-05",
+      "then": ["The form shows 'The end date must be on or after the start date'", "No request is saved"],
+      "schema": "S-002",
+      "input": { "startDate": "2026-08-10", "endDate": "2026-08-05" },
+      "phase": "F-3.2"
+    },
+    {
+      "id": "T-004",
+      "title": "End to end: submit, approve, see approved, receive email",
+      "proves": ["R-003", "R-010", "R-014", "D-004"],
+      "kind": "e2e",
+      "given": "A signed-in team member and the manager, with the email service replaced by a test double",
+      "when": "The team member submits 2026-08-03 to 2026-08-14, and the manager approves it",
+      "then": ["The team member's list shows the request as approved", "One approval email with those dates was sent to the team member"],
+      "phase": "F-6.1"
+    },
+    {
+      "id": "T-005",
+      "title": "A real request is approved in the deployed app",
+      "proves": ["D-005"],
+      "kind": "manual",
+      "given": "The app deployed on Vercel and the user signed in with their company Google account",
+      "when": "They submit one real request and the manager approves it",
+      "then": ["The requester receives the approval email", "The requester sees approved in the app"],
+      "phase": "F-7.1"
+    },
+    {
+      "id": "T-006",
+      "title": "An account outside the company domain is refused",
+      "proves": ["R-001", "D-003"],
+      "kind": "integration",
+      "given": "ALLOWED_EMAIL_DOMAIN set to example.com",
+      "when": "Someone signs in with someone@gmail.com",
+      "then": ["Sign-in is refused with a message", "No request data is shown"],
+      "phase": "F-3.1"
+    },
+    {
+      "id": "T-007",
+      "title": "A submitted request is saved as pending",
+      "proves": ["R-003"],
+      "kind": "integration",
+      "given": "A signed-in team member",
+      "when": "They submit start date 2026-09-01, end date 2026-09-05 and comment 'Family trip'",
+      "then": ["One request matching S-001 is saved with status pending", "It holds the team member's email and name, and those dates and comment"],
+      "schema": "S-002",
+      "input": { "startDate": "2026-09-01", "endDate": "2026-09-05", "comment": "Family trip" },
+      "phase": "F-2.1"
+    },
+    {
+      "id": "T-008",
+      "title": "A request overlapping the person's own request is rejected",
+      "proves": ["R-005", "D-003"],
+      "kind": "integration",
+      "given": "A team member with an approved request from 2026-08-03 to 2026-08-14",
+      "when": "They submit a new request from 2026-08-10 to 2026-08-20",
+      "then": ["The form shows a message that it overlaps an existing request", "Nothing new is saved"],
+      "schema": "S-002",
+      "input": { "startDate": "2026-08-10", "endDate": "2026-08-20" },
+      "phase": "F-3.2"
+    },
+    {
+      "id": "T-009",
+      "title": "A team member sees their own requests with status",
+      "proves": ["R-006"],
+      "kind": "integration",
+      "given": "A team member with one pending, one approved and one rejected request with reason 'Team is short that week'",
+      "when": "They open their requests list",
+      "then": ["The three requests appear with dates and status", "The rejected one shows the reason"],
+      "phase": "F-3.3"
+    },
+    {
+      "id": "T-010",
+      "title": "A team member never sees another person's requests",
+      "proves": ["R-007", "D-001"],
+      "kind": "integration",
+      "given": "Team member A with one request and team member B with one request",
+      "when": "A opens their requests list, and A asks for B's request by its id",
+      "then": ["A's list holds only A's request", "The request for B's id is refused"],
+      "phase": "F-3.3"
+    },
+    {
+      "id": "T-011",
+      "title": "A team member cancels their own pending request",
+      "proves": ["R-008", "D-001"],
+      "kind": "integration",
+      "given": "A team member with a pending request",
+      "when": "They cancel it",
+      "then": ["Its status becomes cancelled", "It disappears from the manager's pending list"],
+      "phase": "F-3.3"
+    },
+    {
+      "id": "T-012",
+      "title": "The manager sees all pending requests",
+      "proves": ["R-009"],
+      "kind": "integration",
+      "given": "Two pending requests from different team members and one approved request",
+      "when": "The manager opens the pending list",
+      "then": ["Exactly the two pending requests appear", "They are ordered oldest first, with name, dates and comment"],
+      "phase": "F-3.4"
+    },
+    {
+      "id": "T-013",
+      "title": "The manager rejects with a reason and the requester is told why",
+      "proves": ["R-011", "R-014", "D-014"],
+      "kind": "integration",
+      "given": "A pending request and the email service replaced by a test double",
+      "when": "The manager rejects it with reason 'Team is short that week'",
+      "then": ["The request status is rejected with that reason", "One rejection email containing the reason was sent to the requester"],
+      "schema": "S-003",
+      "input": { "requestId": "req-1", "decision": "reject", "reason": "Team is short that week" },
+      "phase": "F-3.4"
+    },
+    {
+      "id": "T-014",
+      "title": "A request cannot be decided twice",
+      "proves": ["R-013", "D-003"],
+      "kind": "integration",
+      "given": "A request the manager has already approved",
+      "when": "The manager sends a reject decision for the same request",
+      "then": ["The request stays approved", "No second decision email is sent"],
+      "schema": "S-003",
+      "input": { "requestId": "req-1", "decision": "reject" },
+      "phase": "F-3.4"
+    },
+    {
+      "id": "T-015",
+      "title": "The manager is emailed about a new request",
+      "proves": ["R-015", "D-013"],
+      "kind": "integration",
+      "given": "The email service replaced by a test double",
+      "when": "A team member submits a request from 2026-10-01 to 2026-10-03",
+      "then": ["One email with the requester's name and those dates was sent to MANAGER_EMAIL"],
+      "phase": "F-4.1"
+    },
+    {
+      "id": "T-016",
+      "title": "An email failure is retried 3 times and logged",
+      "proves": ["R-016", "D-003"],
+      "kind": "integration",
+      "given": "The email service test double fails on every send",
+      "when": "The manager approves a pending request",
+      "then": ["The send was tried 3 times in total", "One failure is logged", "The request still shows approved in the app"],
+      "phase": "F-5.1"
+    },
+    {
+      "id": "T-017",
+      "title": "Google sign-in down shows a clear message",
+      "proves": ["R-017"],
+      "kind": "integration",
+      "given": "The Google sign-in provider returns an error",
+      "when": "A visitor tries to sign in",
+      "then": ["The page shows 'Sign-in is unavailable, try again later'", "No request data changes"],
+      "phase": "F-5.2"
+    },
+    {
+      "id": "T-018",
+      "title": "Nobody can delete a request",
+      "proves": ["R-018", "D-001"],
+      "kind": "integration",
+      "given": "A request and a signed-in manager",
+      "when": "A delete is attempted on that request through the app's API",
+      "then": ["The app refuses", "The request still exists unchanged"],
+      "phase": "F-3.5"
+    }
+  ]
+}

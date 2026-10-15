@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "ite_version": "0.1.0",
+  "folder": ".",
+  "checked_at": "2026-10-15T00:10:00Z",
+  "errors": 0,
+  "warnings": 1,
+  "findings": [
+    {
+      "code": "W-MANUAL-MODE",
+      "severity": "warning",
+      "file": ".ite/coverage.json",
+      "message": "This folder was compiled without Node, so checks were not machine-verified.",
+      "fix": "Install Node.js 18+ and run check again."
+    }
+  ],
+  "counts": { "R": 16, "D": 14, "S": 2, "P": 0, "T": 16, "F": 20 }
+}

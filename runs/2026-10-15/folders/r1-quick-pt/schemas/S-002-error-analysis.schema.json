@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-002",
+  "title": "ErrorAnalysis",
+  "description": "The output of P-001: a run's error events grouped into distinct errors. Used by R-003, R-012.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["errors"],
+  "properties": {
+    "errors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/DistinctError" }
+    }
+  },
+  "$defs": {
+    "DistinctError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "title", "summary", "priority", "event_indexes"],
+      "properties": {
+        "fingerprint": { "type": "string", "pattern": "^[a-z0-9-]{3,80}$", "description": "Stable kebab-case key for the error, without numbers that change between occurrences." },
+        "title": { "type": "string", "minLength": 5, "maxLength": 120 },
+        "summary": { "type": "string", "minLength": 10, "maxLength": 1000 },
+        "priority": { "type": "string", "enum": ["Highest", "High", "Medium", "Low"] },
+        "event_indexes": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 0 }, "description": "Positions of the input events that belong to this error." }
+      }
+    }
+  }
+}

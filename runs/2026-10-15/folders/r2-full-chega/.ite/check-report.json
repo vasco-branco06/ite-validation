@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "ite_version": "0.1.0",
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\claude\\C--Users-Admin-Desktop-ITE\\75b00332-ce15-4044-92ff-3d35ba55180e\\scratchpad\\runs\\work\\r2 full chega",
+  "checked_at": "2026-10-15T17:47:59.268Z",
+  "errors": 0,
+  "warnings": 0,
+  "findings": [],
+  "counts": {
+    "R": 18,
+    "D": 14,
+    "S": 3,
+    "P": 0,
+    "T": 18,
+    "F": 19
+  }
+}

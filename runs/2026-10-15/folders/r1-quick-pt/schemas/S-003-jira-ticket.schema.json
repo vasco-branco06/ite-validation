@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-003",
+  "title": "JiraTicket",
+  "description": "The ticket the agent sends to Jira as a new Bug. Used by R-004.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["project_key", "issue_type", "title", "summary", "log_excerpt", "first_seen", "occurrences", "priority", "fingerprint"],
+  "properties": {
+    "project_key": { "type": "string", "pattern": "^[A-Z][A-Z0-9]{1,9}$" },
+    "issue_type": { "type": "string", "enum": ["Bug"] },
+    "title": { "type": "string", "minLength": 5, "maxLength": 120 },
+    "summary": { "type": "string", "minLength": 10, "maxLength": 1000 },
+    "log_excerpt": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "first_seen": { "type": "string", "format": "date-time" },
+    "occurrences": { "type": "integer", "minimum": 1 },
+    "priority": { "type": "string", "enum": ["Highest", "High", "Medium", "Low"] },
+    "fingerprint": { "type": "string", "pattern": "^[a-z0-9-]{3,80}$", "description": "Also added to the issue as a label." }
+  }
+}

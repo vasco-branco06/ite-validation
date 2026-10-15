@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "T-001",
+      "title": "A low product triggers only an alert to the owner, nothing else",
+      "proves": ["D-001"],
+      "kind": "assumption",
+      "given": "A Stock tab where one product is below its minimum",
+      "when": "The check runs",
+      "then": ["The only effects are one email to the owner and a red row", "No order, no other recipient, no other tab is created or changed"]
+    },
+    {
+      "id": "T-002",
+      "title": "A check on 500 product rows finishes without error",
+      "proves": ["R-001", "R-014", "D-002"],
+      "kind": "integration",
+      "given": "A Stock tab with a header row and 500 product rows with Product, Quantity and Minimum",
+      "when": "The check runs",
+      "then": ["It finishes without error within the Apps Script run-time limit", "Every row was read"],
+      "schema": "S-001"
+    },
+    {
+      "id": "T-003",
+      "title": "Two low products and one above give an email with exactly those two and two red rows",
+      "proves": ["R-004", "R-006", "D-003"],
+      "kind": "integration",
+      "given": "3 products: A at its minimum, B below its minimum, C above its minimum",
+      "when": "The check runs",
+      "then": ["One email lists exactly A and B with name, quantity and minimum", "The rows of A and B are red", "The row of C is not red"],
+      "schema": "S-002"
+    },
+    {
+      "id": "T-004",
+      "title": "A failed email send makes at most 3 attempts and keeps the red rows",
+      "proves": ["R-013", "D-004"],
+      "kind": "unit",
+      "given": "One low product and an email sender that always fails",
+      "when": "The check runs",
+      "then": ["The sender is called at most 3 times", "The low row is still red"]
+    },
+    {
+      "id": "T-005",
+      "title": "A check changes no values and emails only the owner",
+      "proves": ["R-007", "R-008", "D-005"],
+      "kind": "integration",
+      "given": "A Stock tab with known Quantity and Minimum values and at least one low product",
+      "when": "The check runs",
+      "then": ["Every Quantity and Minimum is unchanged", "No row is deleted", "The email recipient is only the sheet owner's address"]
+    },
+    {
+      "id": "T-006",
+      "title": "The daily trigger runs the check at 08:00 with the laptop off",
+      "proves": ["R-002", "D-006"],
+      "kind": "manual",
+      "given": "The daily trigger is installed and one product is below its minimum",
+      "when": "The laptop stays off overnight",
+      "then": ["The alert email arrives by 09:00 the next morning"]
+    },
+    {
+      "id": "T-007",
+      "title": "A row with a blank or text Quantity or Minimum is skipped and listed as a problem",
+      "proves": ["R-009", "D-007"],
+      "kind": "unit",
+      "given": "3 rows: one with Quantity blank, one with Minimum set to \"abc\", one valid and low",
+      "when": "The check runs",
+      "then": ["The valid row is in the alert", "The other two are listed under \"Rows with problems\"", "The other two are not in the low list"],
+      "schema": "S-002"
+    },
+    {
+      "id": "T-008",
+      "title": "End to end: one product exactly at its minimum gives one email with only that product",
+      "proves": ["R-003", "R-004", "D-008"],
+      "kind": "e2e",
+      "given": "A sheet with 3 products, one exactly at its minimum and two above",
+      "when": "The daily check runs",
+      "then": ["One email arrives that lists only that product"]
+    },
+    {
+      "id": "T-009",
+      "title": "A check started by hand on the real list matches what the user sees",
+      "proves": ["R-015", "D-009"],
+      "kind": "manual",
+      "given": "The user's real product list and no alert email sent yet today",
+      "when": "The user starts the check from the custom menu",
+      "then": ["The email lists exactly the products the user sees at or below their minimum"]
+    },
+    {
+      "id": "T-010",
+      "title": "Low means at or below the minimum",
+      "proves": ["R-003"],
+      "kind": "unit",
+      "given": "Minimum 5 and quantities 4, 5 and 6",
+      "when": "Each is tested for low stock",
+      "then": ["4 is low", "5 is low", "6 is not low"]
+    },
+    {
+      "id": "T-011",
+      "title": "No low products and no problems means no email",
+      "proves": ["R-005"],
+      "kind": "unit",
+      "given": "Every product above its minimum and no problem rows",
+      "when": "The check runs",
+      "then": ["No email is sent"]
+    },
+    {
+      "id": "T-012",
+      "title": "A restocked row loses its red highlight",
+      "proves": ["R-016", "D-013"],
+      "kind": "integration",
+      "given": "A row that the check highlighted red, and its Quantity is then raised above its Minimum",
+      "when": "The check runs again",
+      "then": ["That row is no longer red"]
+    },
+    {
+      "id": "T-013",
+      "title": "A repeated product name is checked per row and listed as a problem",
+      "proves": ["R-010"],
+      "kind": "unit",
+      "given": "Two rows with the same product name, one of them low",
+      "when": "The check runs",
+      "then": ["The low row is in the alert", "Both rows are listed under \"Rows with problems\" as duplicate_product"],
+      "schema": "S-002"
+    },
+    {
+      "id": "T-014",
+      "title": "A missing or empty Stock tab sends one notice and no alert",
+      "proves": ["R-011"],
+      "kind": "unit",
+      "given": "A sheet with no Stock tab, or a Stock tab with only the header row",
+      "when": "The check runs",
+      "then": ["One \"sheet not found or empty\" email is sent", "No alert email is sent"]
+    },
+    {
+      "id": "T-015",
+      "title": "Running the check twice the same day sends at most one alert email",
+      "proves": ["R-012"],
+      "kind": "unit",
+      "given": "One low product and an alert email already sent today",
+      "when": "The check runs again the same day",
+      "then": ["No second alert email is sent"]
+    },
+    {
+      "id": "T-016",
+      "title": "The Apps Script test file runs from the editor and reports results",
+      "proves": ["D-014"],
+      "kind": "assumption",
+      "given": "Code.gs and Tests.gs pasted into the sheet's Apps Script editor",
+      "when": "The user runs runAllTests from the editor",
+      "then": ["The log shows one PASS or FAIL line per test and a total", "No Node.js is needed on the laptop"]
+    }
+  ]
+}

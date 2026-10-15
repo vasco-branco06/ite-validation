@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-002",
+  "title": "NewVacationRequest",
+  "description": "The form a team member submits to request vacation. Used by R-003.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["startDate", "endDate"],
+  "properties": {
+    "startDate": { "type": "string", "format": "date" },
+    "endDate": { "type": "string", "format": "date" },
+    "comment": { "type": "string", "maxLength": 500 }
+  }
+}

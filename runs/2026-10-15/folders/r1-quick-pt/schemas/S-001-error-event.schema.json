@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-001",
+  "title": "ErrorEvent",
+  "description": "One error line with its following stack-trace lines, read from a log file. Used by R-002.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["file", "line_number", "level", "message", "seen_at"],
+  "properties": {
+    "file": { "type": "string", "minLength": 1, "description": "Log file name inside LOG_DIR." },
+    "line_number": { "type": "integer", "minimum": 1 },
+    "level": { "type": "string", "enum": ["ERROR", "FATAL", "CRITICAL"] },
+    "message": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "stack": { "type": "string", "maxLength": 8000, "description": "Stack-trace lines after the error line, empty when none." },
+    "log_timestamp": { "type": "string", "description": "Timestamp text as written in the log, if any." },
+    "seen_at": { "type": "string", "format": "date-time", "description": "When the agent read the line." }
+  }
+}

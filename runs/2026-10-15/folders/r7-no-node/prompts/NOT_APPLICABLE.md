@@ -1,0 +1,5 @@
+# Not applicable
+
+Area: llm
+Reason: Comparing a stock quantity with a threshold needs no judgement; no LLM step.
+Decided in: D-012

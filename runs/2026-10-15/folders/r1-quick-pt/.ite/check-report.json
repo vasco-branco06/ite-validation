@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "ite_version": "0.1.0",
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\claude\\C--Users-Admin-Desktop-ITE\\75b00332-ce15-4044-92ff-3d35ba55180e\\scratchpad\\runs\\work\\r1 quick pt",
+  "checked_at": "2026-10-15T17:46:25.094Z",
+  "errors": 0,
+  "warnings": 0,
+  "findings": [],
+  "counts": {
+    "R": 16,
+    "D": 14,
+    "S": 4,
+    "P": 1,
+    "T": 15,
+    "F": 18
+  }
+}

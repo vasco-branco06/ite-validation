@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-003",
+  "title": "ManagerDecision",
+  "description": "The manager's approve or reject decision on a pending request. Used by R-010 and R-011.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requestId", "decision"],
+  "properties": {
+    "requestId": { "type": "string", "minLength": 1 },
+    "decision": { "type": "string", "enum": ["approve", "reject"] },
+    "reason": { "type": "string", "maxLength": 500 }
+  }
+}

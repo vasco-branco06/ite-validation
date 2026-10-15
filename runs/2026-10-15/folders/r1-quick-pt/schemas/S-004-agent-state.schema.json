@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-004",
+  "title": "AgentState",
+  "description": "The local state file kept between runs: read positions, fingerprints that already have a ticket, and the retry queue. Used by R-001, R-007, R-008.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["offsets", "known", "queue"],
+  "properties": {
+    "offsets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/FileOffset" }
+    },
+    "known": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/KnownError" }
+    },
+    "queue": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/QueuedTicket" }
+    }
+  },
+  "$defs": {
+    "FileOffset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "offset"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "offset": { "type": "integer", "minimum": 0, "description": "Byte position read up to." }
+      }
+    },
+    "KnownError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "jira_key", "created_at"],
+      "properties": {
+        "fingerprint": { "type": "string", "pattern": "^[a-z0-9-]{3,80}$" },
+        "jira_key": { "type": "string", "pattern": "^[A-Z][A-Z0-9]{1,9}-[0-9]+$" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "QueuedTicket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "attempts", "payload_json"],
+      "properties": {
+        "fingerprint": { "type": "string", "pattern": "^[a-z0-9-]{3,80}$" },
+        "attempts": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "last_error": { "type": "string" },
+        "payload_json": { "type": "string", "minLength": 2, "description": "The S-003 ticket, serialised as JSON." }
+      }
+    }
+  }
+}

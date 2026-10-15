@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "idea": "uma app interna onde a equipa regista pedidos de férias e o gestor aprova ou recusa",
+  "language": "pt",
+  "created_at": "2026-10-15T17:42:11.893Z",
+  "updated_at": "2026-10-15T17:43:44.834Z",
+  "approved_at": "2026-10-15T17:43:44.833Z",
+  "mode": "scripted",
+  "question_budget": null,
+  "areas": [
+    {
+      "id": "goal",
+      "state": "clear",
+      "summary": "Team members submit vacation requests and the manager approves or rejects them. Success: every vacation request goes through the app and the manager answers each within 2 business days; no more requests by email or word of mouth.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "users",
+      "state": "clear",
+      "summary": "Up to 20 team members who submit requests a few times a year, and one single manager who reviews them as they arrive. Everyone uses email and a browser; nobody is technical.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "scope",
+      "state": "clear",
+      "summary": "v1: team members submit vacation requests (dates); the manager approves or rejects each. Out of scope: automatic tracking of remaining vacation days, payroll integration, other absence types (sick leave, absences).",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "inputs",
+      "state": "clear",
+      "summary": "One web form per request: start date, end date, optional comment (max ~500 chars); requester identity comes from login. Volume: a few requests per person per year, up to 20 people. Manager input: approve or reject per request, with an optional reason.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "outputs",
+      "state": "clear",
+      "summary": "Requester gets an email with the decision (approved/rejected, plus reason if given) and sees each request's status (pending/approved/rejected) in the app. Manager sees a list of all pending requests in the app and gets an email when a new request arrives.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "integrations",
+      "state": "clear",
+      "summary": "Google Workspace sign-in (OAuth with company Google accounts) for login; a transactional email service for notifications. If email sending fails: retry 3 times, then log the failure; the request status stays visible in the app. If Google sign-in is down, nobody can log in and the app shows a clear message; no data is lost.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "security",
+      "state": "assumed",
+      "summary": "Only company Google accounts can sign in. Team members can create and view only their own requests and cancel them while pending; only the manager can approve or reject; nobody can delete requests. Secrets (Google OAuth client secret, email service API key, database URL) live in .env / the host's environment variables, never in code. Test: if a team member who is not the manager tries to approve a request, the app refuses and the request stays pending.",
+      "decision_ids": [
+        "D-001"
+      ],
+      "test_ids": [
+        "T-001"
+      ],
+      "reason": null
+    },
+    {
+      "id": "stack",
+      "state": "assumed",
+      "summary": "TypeScript web app (Next.js) with a Postgres database, hosted on a managed service (Vercel + Supabase), reachable only by signing in with a company Google account. Why: always available to the whole team without maintaining a server. Test: if someone opens the app URL without signing in, they are sent to the Google sign-in page and see no request data.",
+      "decision_ids": [
+        "D-002"
+      ],
+      "test_ids": [
+        "T-002"
+      ],
+      "reason": null
+    },
+    {
+      "id": "llm",
+      "state": "not_applicable",
+      "summary": null,
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": "Submitting and approving requests needs no judgement from a model; the manager decides."
+    },
+    {
+      "id": "errors",
+      "state": "assumed",
+      "summary": "Five failure cases: (1) end date before start date: form rejected with a clear message, nothing saved; (2) request overlapping one of the same person's pending or approved requests: rejected with a message; (3) email sending fails: retry 3 times, log the failure, status stays visible in the app; (4) manager clicks approve/reject twice or on an already decided request: the first decision stands, nothing changes; (5) sign-in with a non-company account: access refused, nothing shown. Test: if a request with end date before start date is submitted, it is rejected with a message and nothing is saved.",
+      "decision_ids": [
+        "D-003"
+      ],
+      "test_ids": [
+        "T-003"
+      ],
+      "reason": null
+    },
+    {
+      "id": "acceptance",
+      "state": "assumed",
+      "summary": "One Given/When/Then per requirement and per failure case, plus one happy-path end-to-end test: Given a team member signed in, When they submit a request and the manager approves it, Then the request shows Approved and the team member receives an approval email. Test: the end-to-end happy path above passes.",
+      "decision_ids": [
+        "D-004"
+      ],
+      "test_ids": [
+        "T-004"
+      ],
+      "reason": null
+    },
+    {
+      "id": "done",
+      "state": "assumed",
+      "summary": "v1 is done when all acceptance tests pass, the app is deployed and reachable by the team with company Google accounts, a README explains how to run and deploy it, and one real request is submitted, approved and emailed by hand. Test: if the user submits one real request and the manager approves it in the deployed app, the requester receives the email and sees Approved.",
+      "decision_ids": [
+        "D-005"
+      ],
+      "test_ids": [
+        "T-005"
+      ],
+      "reason": null
+    }
+  ],
+  "history": [
+    {
+      "n": 1,
+      "kind": "question",
+      "area": "goal",
+      "question": "Como vais saber que a app está a funcionar bem, sem abrir código?",
+      "recommended": "Todos os pedidos de férias passam pela app e o gestor responde a cada um em 2 dias úteis; acabam os pedidos por email ou de boca.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:42:18.878Z"
+    },
+    {
+      "n": 2,
+      "kind": "question",
+      "area": "users",
+      "question": "Quantas pessoas tem a equipa, quantos gestores há, e com que à-vontade usam ferramentas digitais?",
+      "recommended": "Uma equipa de até 20 pessoas com um único gestor; todos usam email e browser, nenhum é técnico.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:42:30.166Z"
+    },
+    {
+      "n": 3,
+      "kind": "question",
+      "area": "scope",
+      "question": "O que é que a versão 1 não deve fazer, mesmo que pareça útil?",
+      "recommended": "Sem contagem automática de dias de férias disponíveis, sem ligação ao processamento salarial e sem outros tipos de ausência (baixas, faltas).",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:42:39.231Z"
+    },
+    {
+      "n": 4,
+      "kind": "question",
+      "area": "inputs",
+      "question": "Que informação é que a pessoa preenche ao fazer um pedido de férias?",
+      "recommended": "Data de início, data de fim e um comentário opcional; o nome vem do login.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:42:48.102Z"
+    },
+    {
+      "n": 5,
+      "kind": "question",
+      "area": "outputs",
+      "question": "Como é que a pessoa fica a saber que o pedido foi aprovado ou recusado?",
+      "recommended": "Recebe um email com a decisão e vê o estado do pedido na app; o gestor vê numa lista todos os pedidos pendentes.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:42:57.112Z"
+    },
+    {
+      "n": 6,
+      "kind": "question",
+      "area": "integrations",
+      "question": "Para enviar os emails e fazer login, a equipa já usa Google Workspace ou Microsoft 365?",
+      "recommended": "Google Workspace: login com a conta Google da empresa e envio de emails por um serviço de email transacional; se o email falhar, tenta 3 vezes e o estado continua visível na app.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T17:43:06.718Z"
+    },
+    {
+      "n": 7,
+      "kind": "question",
+      "area": "stack",
+      "question": "Onde deve a app ficar alojada para a equipa lhe aceder?",
+      "recommended": "App web em TypeScript (Next.js) com base de dados Postgres, alojada num serviço gerido como Vercel com Supabase, acessível só a contas da empresa.",
+      "answer": null,
+      "accepted_recommendation": false,
+      "at": "2026-10-15T17:43:16.252Z"
+    }
+  ],
+  "stop_reason": "user_stopped"
+}

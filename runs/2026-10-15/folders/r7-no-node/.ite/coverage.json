@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "idea": "uma folha de cálculo que me avisa quando o stock de um produto baixa",
+  "language": "pt",
+  "created_at": "2026-10-15T00:00:00Z",
+  "updated_at": "2026-10-15T00:03:00Z",
+  "approved_at": "2026-10-15T00:03:00Z",
+  "mode": "manual",
+  "question_budget": null,
+  "stop_reason": "user_stopped",
+  "areas": [
+    { "id": "goal", "state": "clear", "summary": "A spreadsheet that alerts the user when a product's stock is low. Each product has its own minimum stock in a column; success = whenever a product's quantity is at or below its minimum, the user gets an alert the same day.", "decision_ids": ["D-010"], "test_ids": ["T-010"], "reason": null },
+    { "id": "users", "state": "clear", "summary": "One user: the person typing ('me'), at the level of a Claude Code user who uses spreadsheets but does not write code by hand.", "decision_ids": ["D-011"], "test_ids": ["T-005"], "reason": null },
+    { "id": "scope", "state": "assumed", "summary": "Assumed: v1 only checks stock against per-product minimums and alerts the user. Out of scope: automatic orders to suppliers, sales or invoice tracking (the user updates quantities by hand), more than one warehouse/location.", "decision_ids": ["D-001"], "test_ids": ["T-001"], "reason": null },
+    { "id": "inputs", "state": "assumed", "summary": "Assumed: one Google Sheet tab named 'Stock' with columns Product, Quantity, Minimum; the user updates quantities by hand; up to 500 products; checked once a day.", "decision_ids": ["D-002"], "test_ids": ["T-002"], "reason": null },
+    { "id": "outputs", "state": "assumed", "summary": "Assumed: one daily email to the user's own Google account listing every product at or below its minimum (name, quantity, minimum); those rows are also highlighted red in the sheet. No email when nothing is low.", "decision_ids": ["D-003", "D-013"], "test_ids": ["T-003", "T-011", "T-012"], "reason": null },
+    { "id": "integrations", "state": "assumed", "summary": "Assumed: only Google Sheets and Gmail, through Apps Script built-in services (SpreadsheetApp, MailApp). If sending the email fails, retry up to 3 times; the red highlight in the sheet stays as the fallback alert.", "decision_ids": ["D-004"], "test_ids": ["T-004"], "reason": null },
+    { "id": "security", "state": "assumed", "summary": "Assumed: the script reads the 'Stock' tab and only changes row formatting (highlight); it never edits quantities or minimums and never deletes anything. Email goes only to the sheet owner. No API keys or secrets; access is the Google authorisation granted once at setup.", "decision_ids": ["D-005"], "test_ids": ["T-005"], "reason": null },
+    { "id": "stack", "state": "assumed", "summary": "Assumed: Google Sheets plus Google Apps Script, run by a daily time trigger at 08:00 in Google's cloud, so it works with the laptop off. No other runtime or hosting.", "decision_ids": ["D-006", "D-014"], "test_ids": ["T-006", "T-016"], "reason": null },
+    { "id": "llm", "state": "not_applicable", "summary": null, "decision_ids": ["D-012"], "test_ids": [], "reason": "Comparing a stock quantity with a threshold needs no judgement; no LLM step." },
+    { "id": "errors", "state": "assumed", "summary": "Assumed failure cases: (1) quantity blank or not a number -> row skipped, listed in the email under 'rows with problems', other rows checked; (2) minimum blank or not a number -> same; (3) 'Stock' tab missing or empty -> no alert email, a short 'sheet not found/empty' email instead; (4) same product name twice -> each row checked separately and the duplicate listed under 'rows with problems'; (5) check run twice the same day -> at most one alert email per day; (6) email sending fails -> retry 3 times, red highlight remains.", "decision_ids": ["D-007"], "test_ids": ["T-007", "T-013", "T-014", "T-015", "T-004"], "reason": null },
+    { "id": "acceptance", "state": "assumed", "summary": "Assumed: one Given/When/Then per requirement, built from the tests T-001..T-009, plus one happy-path end-to-end test (T-008).", "decision_ids": ["D-008"], "test_ids": ["T-008"], "reason": null },
+    { "id": "done", "state": "assumed", "summary": "Assumed: v1 is done when all tests pass and one manual run on the user's real product list gives an email that lists exactly the products the user sees at or below their minimum. A short README on how to set it up.", "decision_ids": ["D-009"], "test_ids": ["T-009"], "reason": null }
+  ],
+  "history": [
+    {
+      "n": 1,
+      "kind": "question",
+      "area": "goal",
+      "question": "When does a product's stock count as 'low'?",
+      "recommended": "Each product has its own minimum stock in a column; when the quantity is at or below that minimum, you get an alert the same day.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-15T00:00:00Z"
+    },
+    {
+      "n": 2,
+      "kind": "question",
+      "area": "scope",
+      "question": "What should version 1 NOT do, even if it sounds useful?",
+      "recommended": "No automatic orders to suppliers, no sales or invoice tracking (you update quantities yourself), and only one location/warehouse.",
+      "answer": "chega",
+      "accepted_recommendation": false,
+      "at": "2026-10-15T00:01:00Z"
+    }
+  ]
+}

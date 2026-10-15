@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "T-001",
+      "title": "Jira outage loses no ticket and retries at most 3 times",
+      "proves": ["R-008", "D-001"],
+      "kind": "integration",
+      "given": "A new error in the log and a mocked Jira that answers 503 to every request",
+      "when": "The agent runs four times",
+      "then": ["The ticket stays in the queue in the state file", "Jira receives at most 3 create attempts", "The agent log has one alert after the third failure"]
+    },
+    {
+      "id": "T-002",
+      "title": "Create-only Jira access and no secrets in code or logs",
+      "proves": ["R-013", "R-014", "D-002"],
+      "kind": "integration",
+      "given": "The agent's code, the .env values and a full run against a mocked Jira",
+      "when": "The code and the agent log are searched for the token and key values, and all HTTP calls to Jira are recorded",
+      "then": ["No secret value is found", "Every Jira call is POST /rest/api/3/issue", ".env is listed in .gitignore"]
+    },
+    {
+      "id": "T-003",
+      "title": "A 50 MB log is processed within 5 minutes",
+      "proves": ["R-015", "D-003"],
+      "kind": "integration",
+      "given": "50 MB of new log lines and mocked Jira and LLM services",
+      "when": "The scheduler starts one run",
+      "then": ["The run finishes in under 5 minutes"]
+    },
+    {
+      "id": "T-004",
+      "title": "LLM failure still creates a ticket",
+      "proves": ["R-012", "D-004"],
+      "kind": "unit",
+      "given": "A new error event and an LLM that returns text that is not valid S-002 JSON",
+      "when": "The agent runs",
+      "then": ["One ticket is created", "Its title is taken from the raw log line", "Its priority is Medium"]
+    },
+    {
+      "id": "T-005",
+      "title": "A repeated error gives exactly one ticket",
+      "proves": ["R-006", "D-005"],
+      "kind": "integration",
+      "given": "The same error written 100 times to the log within 10 minutes",
+      "when": "The agent runs",
+      "then": ["Exactly one ticket exists for it", "Its occurrences field is 100"]
+    },
+    {
+      "id": "T-006",
+      "title": "Happy path: a new error becomes a complete Jira ticket within 15 minutes",
+      "proves": ["R-004", "R-005", "D-006"],
+      "kind": "e2e",
+      "given": "A Jira test project, a running scheduler and a new ERROR line written to a log file",
+      "when": "15 minutes pass",
+      "then": ["One Bug exists in the test project", "It has title, summary, log excerpt, first-seen time, occurrence count and priority", "Its fields match S-003"]
+    },
+    {
+      "id": "T-007",
+      "title": "Support team confirms last week's tickets",
+      "proves": ["D-007"],
+      "kind": "manual",
+      "given": "Last week's log files and a Jira test project",
+      "when": "The agent runs over them and the support team reviews the tickets",
+      "then": ["The number of tickets equals the number of distinct errors", "The team confirms the tickets are right"]
+    },
+    {
+      "id": "T-008",
+      "title": "An error already ticketed in an earlier run gets no new ticket",
+      "proves": ["R-007", "D-013"],
+      "kind": "integration",
+      "given": "An error that got a ticket in a previous run, recorded in the state file",
+      "when": "The same error appears again and the agent runs",
+      "then": ["No new ticket is created"]
+    },
+    {
+      "id": "T-009",
+      "title": "Only new lines are read",
+      "proves": ["R-001"],
+      "kind": "unit",
+      "given": "A log file already read up to its end in the previous run",
+      "when": "The agent runs with no new lines",
+      "then": ["No error event is produced", "No LLM call is made", "No ticket is created"]
+    },
+    {
+      "id": "T-010",
+      "title": "Only ERROR, FATAL and CRITICAL lines become error events",
+      "proves": ["R-002", "D-014"],
+      "kind": "unit",
+      "given": "A log with INFO, DEBUG and WARN lines and one error line followed by a stack trace",
+      "when": "The agent selects error events",
+      "then": ["Exactly one S-001 event is produced", "Its stack field holds the stack-trace lines"]
+    },
+    {
+      "id": "T-011",
+      "title": "Wrong Jira credentials stop the run without retries",
+      "proves": ["R-009"],
+      "kind": "integration",
+      "given": "A new error and a mocked Jira that answers 401",
+      "when": "The agent runs",
+      "then": ["Jira receives one create attempt", "The ticket stays in the queue with its attempt count unchanged", "The agent log has one credentials alert"]
+    },
+    {
+      "id": "T-012",
+      "title": "Empty or missing log file is skipped",
+      "proves": ["R-010"],
+      "kind": "unit",
+      "given": "An empty log file and a configured file that does not exist",
+      "when": "The agent runs",
+      "then": ["The run ends without error", "No ticket is created"]
+    },
+    {
+      "id": "T-013",
+      "title": "Unreadable lines are skipped and counted",
+      "proves": ["R-011"],
+      "kind": "unit",
+      "given": "A log file with 3 binary lines and one readable error line",
+      "when": "The agent runs",
+      "then": ["One error event is produced", "The run summary reports 3 skipped lines"]
+    },
+    {
+      "id": "T-014",
+      "title": "P-001 returns valid S-002 JSON",
+      "proves": ["R-003"],
+      "kind": "prompt",
+      "given": "One ERROR event about a payments-api timeout",
+      "when": "P-001 runs on Claude Haiku 5.5",
+      "then": ["The output is valid JSON matching S-002", "It has one error", "Its priority is one of Highest, High, Medium, Low"]
+    },
+    {
+      "id": "T-015",
+      "title": "P-001 separates different errors",
+      "proves": ["R-016"],
+      "kind": "prompt",
+      "given": "Two events with different causes, a database connection refusal and a missing field",
+      "when": "P-001 runs on Claude Haiku 5.5",
+      "then": ["The output has two errors", "The two fingerprints are different"]
+    }
+  ]
+}

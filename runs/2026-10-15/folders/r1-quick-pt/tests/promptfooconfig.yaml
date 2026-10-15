@@ -1,0 +1,33 @@
+# Prompt tests for Log-to-Jira Agent. One test per P- behaviour; each description starts with its T- id.
+# Run: npx promptfoo@latest eval -c tests/promptfooconfig.yaml (needs ANTHROPIC_API_KEY in your environment).
+
+description: Log-to-Jira Agent prompt tests
+
+prompts:
+  - file://../prompts/P-001-analyse-errors.md
+
+providers:
+  - id: anthropic:messages:claude-haiku-5-5
+
+tests:
+  - description: "T-014 P-001 returns valid S-002 JSON"
+    vars:
+      input: '[{"file": "app.log", "line_number": 10, "level": "ERROR", "message": "Timeout after 30000ms calling payments-api order=1182", "seen_at": "2026-10-15T09:00:00Z"}]'
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const o = JSON.parse(output);
+          return Array.isArray(o.errors) && o.errors.length === 1
+            && ['Highest', 'High', 'Medium', 'Low'].includes(o.errors[0].priority)
+            && /^[a-z0-9-]{3,80}$/.test(o.errors[0].fingerprint)
+            && o.errors[0].title.length <= 120;
+  - description: "T-015 P-001 separates different errors"
+    vars:
+      input: '[{"file": "worker.log", "line_number": 3, "level": "FATAL", "message": "Database connection refused: db01:5432", "seen_at": "2026-10-15T09:10:00Z"}, {"file": "worker.log", "line_number": 8, "level": "ERROR", "message": "KeyError: ''email'' in users/import.py line 44", "seen_at": "2026-10-15T09:10:00Z"}]'
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const o = JSON.parse(output);
+          return o.errors.length === 2 && o.errors[0].fingerprint !== o.errors[1].fingerprint;
