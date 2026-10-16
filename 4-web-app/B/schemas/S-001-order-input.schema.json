@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "S-001",
+  "title": "OrderInput",
+  "description": "What the order form sends when an order is created or edited. Used by R-002.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["customer_name", "phone", "cake", "pickup_date"],
+  "properties": {
+    "customer_name": { "type": "string", "minLength": 1, "pattern": "\\S", "description": "Customer name; not blank" },
+    "phone": { "type": "string", "pattern": "^[0-9 +]*[0-9][0-9 +]*$", "description": "Digits, spaces and + only, at least one digit" },
+    "cake": { "type": "string", "minLength": 1, "pattern": "\\S", "description": "Free text: which cake, size, message" },
+    "pickup_date": { "type": "string", "format": "date", "description": "Pickup date, YYYY-MM-DD; not before today" },
+    "pickup_time": { "type": ["string", "null"], "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$", "description": "Optional pickup time, HH:MM" }
+  }
+}

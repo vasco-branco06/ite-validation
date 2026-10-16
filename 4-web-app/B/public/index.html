@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bakery Cake Orders</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Bakery Cake Orders</h1>
+
+  <form id="order-form" novalidate>
+    <h2 id="form-title">New order</h2>
+    <label for="customer_name">Customer name</label>
+    <input id="customer_name" name="customer_name" type="text" autocomplete="off" aria-describedby="customer_name-error">
+    <p class="field-error" id="customer_name-error" data-testid="customer_name-error"></p>
+
+    <label for="phone">Phone</label>
+    <input id="phone" name="phone" type="tel" autocomplete="off" aria-describedby="phone-error">
+    <p class="field-error" id="phone-error" data-testid="phone-error"></p>
+
+    <label for="cake">Cake</label>
+    <textarea id="cake" name="cake" rows="2" aria-describedby="cake-error"></textarea>
+    <p class="field-error" id="cake-error" data-testid="cake-error"></p>
+
+    <label for="pickup_date">Pickup date</label>
+    <input id="pickup_date" name="pickup_date" type="date" aria-describedby="pickup_date-error">
+    <p class="field-error" id="pickup_date-error" data-testid="pickup_date-error"></p>
+
+    <label for="pickup_time">Pickup time</label>
+    <input id="pickup_time" name="pickup_time" type="time" aria-describedby="pickup_time-error">
+    <p class="field-error" id="pickup_time-error" data-testid="pickup_time-error"></p>
+
+    <p id="form-message" class="message" role="alert"></p>
+    <div class="form-buttons">
+      <button type="submit">Save</button>
+      <button type="button" id="cancel-edit" hidden>Cancel edit</button>
+    </div>
+  </form>
+
+  <section>
+    <h2>Upcoming orders</h2>
+    <ul id="upcoming" class="orders" data-testid="upcoming"></ul>
+    <p id="no-upcoming" class="empty" hidden>No upcoming orders.</p>
+  </section>
+
+  <section>
+    <h2>Picked up or past</h2>
+    <ul id="past" class="orders past" data-testid="past"></ul>
+    <p id="no-past" class="empty" hidden>None.</p>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

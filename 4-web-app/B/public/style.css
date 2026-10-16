@@ -1,0 +1,115 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 48rem;
+  margin: 1rem auto;
+  padding: 0 1rem;
+  color: #222;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+form h2,
+form .message,
+form .form-buttons {
+  grid-column: 1 / -1;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+form.editing {
+  border-color: #c77d00;
+  background: #fff8ec;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+  padding: 0.4rem;
+}
+
+button {
+  justify-self: start;
+  padding: 0.4rem 1.5rem;
+  cursor: pointer;
+}
+
+.message {
+  margin: 0;
+  color: #b00020;
+  min-height: 1.2em;
+}
+
+.orders {
+  list-style: none;
+  padding: 0;
+}
+
+.order {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  padding: 0.6rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.order .pickup_date,
+.order .pickup_time {
+  font-weight: bold;
+}
+
+.order .cake {
+  flex-basis: 100%;
+}
+
+.empty {
+  color: #666;
+}
+
+.order .actions {
+  flex-basis: 100%;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.order .actions button {
+  padding: 0.2rem 0.8rem;
+}
+
+.order.picked-up {
+  opacity: 0.5;
+  background: #f2f2f2;
+}
+
+.order .actions .delete {
+  margin-left: auto;
+  color: #b00020;
+}
+
+.field-error {
+  grid-column: 2;
+  margin: -0.4rem 0 0;
+  color: #b00020;
+  font-size: 0.9em;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+input.invalid,
+textarea.invalid {
+  border: 2px solid #b00020;
+  background: #fff0f0;
+}

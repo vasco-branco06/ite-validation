@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "idea": "Small web app: a one-page app with a form, a database and a list view.",
+  "language": "en",
+  "created_at": "2026-10-16T10:27:14.142Z",
+  "updated_at": "2026-10-16T10:33:16.841Z",
+  "approved_at": "2026-10-16T10:33:16.841Z",
+  "mode": "scripted",
+  "question_budget": null,
+  "areas": [
+    {
+      "id": "goal",
+      "state": "clear",
+      "summary": "Take cake orders for a small bakery (customer name, phone, cake, pickup date) and show the owner all orders in one list. Success: every order placed through the form appears in the list within a few seconds, and no order is ever lost or shown twice.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "users",
+      "state": "clear",
+      "summary": "Two users: the bakery owner and one employee, entering orders at the counter or during phone calls, on one shared laptop in the shop; customers never use the app. Volume: about 10 orders on a normal day, up to 30 before holidays. Technical level: comfortable with a web browser, no coding.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "scope",
+      "state": "clear",
+      "summary": "v1: a single-page web app on the shop laptop with one order form (customer name, phone, cake, pickup date), a local database storing the orders, and a list view of all orders. Out of scope for v1: online ordering by customers, payments, automatic SMS or email messages to customers.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "inputs",
+      "state": "clear",
+      "summary": "One input: a cake order typed into the web form by the owner or employee, about 10 per day (up to 30 before holidays). Fields: customer name (text, required), phone (text, required), cake (free text, required; may include size and message), pickup date (required) plus optional pickup time.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "outputs",
+      "state": "clear",
+      "summary": "Output: a list on the same page, read by the owner and employee, showing every order (name, phone, cake, pickup date and optional time). Upcoming pickups first, soonest at the top; each order has a 'Picked up' button that greys it out and moves it to a separate bottom section with past orders.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "integrations",
+      "state": "not_applicable",
+      "summary": null,
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": "The app talks to no outside system: it runs on one laptop with a local database, and payments, online ordering and SMS/email are out of scope."
+    },
+    {
+      "id": "security",
+      "state": "clear",
+      "summary": "The app reads and writes only its own SQLite file. Users can create orders, edit any order, mark orders picked up, and delete orders only after an 'Are you sure?' confirmation. No app password: the server accepts connections only from the laptop itself (localhost), protected by the laptop's login. No secrets or API keys are needed.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "stack",
+      "state": "clear",
+      "summary": "Node.js with TypeScript and a single SQLite database file, running locally on the shop laptop and opened in its web browser at a local address. No internet hosting. Why: one laptop, no cost, no accounts, the database is one file that is easy to back up.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "llm",
+      "state": "not_applicable",
+      "summary": null,
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": "A form, a database and a list view involve no step that needs judgement."
+    },
+    {
+      "id": "errors",
+      "state": "clear",
+      "summary": "Six failure cases: (1) required field empty: nothing saved, field highlighted, typed text kept; (2) pickup date in the past: rejected with a message; (3) phone contains letters: rejected, only digits, spaces and + allowed; (4) Save clicked twice: only one order saved; (5) database file cannot be written: clear error shown, typed order stays on screen, nothing half-saved; (6) laptop restarts: all saved orders still present.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "acceptance",
+      "state": "clear",
+      "summary": "12 Given/When/Then checks: (1) saving a complete order shows it in the list within a few seconds; (2) list sorts upcoming soonest first, past orders in bottom section; (3) Picked up greys out and moves the order to the bottom; (4) editing the pickup date updates and re-sorts the order; (5) Delete asks for confirmation, Cancel keeps it, confirm removes it; (6) empty required field: nothing saved, field highlighted, text kept; (7) past pickup date rejected; (8) phone with letters rejected; (9) double-click Save saves one order; (10) unwritable database: error shown, form kept, nothing half-saved; (11) orders survive a laptop restart; (12) connection from another device on the network is refused.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    },
+    {
+      "id": "done",
+      "state": "clear",
+      "summary": "v1 is done when: all 12 acceptance checks pass; one real day of orders entered on the shop laptop matches the owner's paper notes; a one-page README explains how to start the app and back up the SQLite database file.",
+      "decision_ids": [],
+      "test_ids": [],
+      "reason": null
+    }
+  ],
+  "history": [
+    {
+      "n": 1,
+      "kind": "question",
+      "area": "goal",
+      "question": "What will people record with the form, in one sentence?",
+      "recommended": "A simple log of entries (for example contacts, tasks or notes), so you can see everything saved in one list.",
+      "answer": "It's for my small bakery. Customers order a cake: their name, phone, which cake, and the pickup date. I want to see all the orders in a list.",
+      "accepted_recommendation": false,
+      "at": "2026-10-16T10:27:34.359Z"
+    },
+    {
+      "n": 2,
+      "kind": "question",
+      "area": "goal",
+      "question": "How will you know the app is working for the bakery?",
+      "recommended": "Every order placed through the form appears in the list within a few seconds, and no order is ever lost or shown twice.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:28:05.763Z"
+    },
+    {
+      "n": 3,
+      "kind": "question",
+      "area": "users",
+      "question": "Who fills in the form: customers themselves on their own phones, or you at the counter?",
+      "recommended": "You (or your staff) at the counter or on the phone, on one laptop or tablet in the bakery.",
+      "answer": "Me and my one employee, at the counter or when someone calls. Just one laptop in the shop.",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:28:31.043Z"
+    },
+    {
+      "n": 4,
+      "kind": "question",
+      "area": "users",
+      "question": "About how many cake orders do you take on a busy day?",
+      "recommended": "Up to 20 orders a day, entered throughout opening hours.",
+      "answer": "Around 10 on a normal day, maybe 30 before holidays.",
+      "accepted_recommendation": false,
+      "at": "2026-10-16T10:28:53.027Z"
+    },
+    {
+      "n": 5,
+      "kind": "question",
+      "area": "scope",
+      "question": "Which of these should version 1 leave out: online ordering by customers, payments, and automatic SMS or email reminders?",
+      "recommended": "Leave all three out of v1: no online ordering by customers, no payments, no automatic SMS or email messages.",
+      "answer": "yes, leave those out",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:29:56.378Z"
+    },
+    {
+      "n": 6,
+      "kind": "question",
+      "area": "inputs",
+      "question": "For 'which cake', should you pick from a fixed list of your cakes or type it freely?",
+      "recommended": "Type it freely in a text box, so custom cakes and notes like 'chocolate, 2 kg, Happy Birthday Ana' fit.",
+      "answer": "ok, free text",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:30:17.907Z"
+    },
+    {
+      "n": 7,
+      "kind": "question",
+      "area": "inputs",
+      "question": "Should the pickup be just a date, or a date with a time?",
+      "recommended": "A date plus an optional time, so 'Saturday' works and 'Saturday 10:30' works too.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:30:37.192Z"
+    },
+    {
+      "n": 8,
+      "kind": "question",
+      "area": "outputs",
+      "question": "In what order should the list show the orders?",
+      "recommended": "Upcoming pickups first, soonest at the top, with past pickups in a separate section below.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:30:59.579Z"
+    },
+    {
+      "n": 9,
+      "kind": "question",
+      "area": "outputs",
+      "question": "Should you be able to mark an order as picked up in the list?",
+      "recommended": "Yes: a 'Picked up' button on each order that greys it out and moves it to the bottom section.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:31:10.907Z"
+    },
+    {
+      "n": 10,
+      "kind": "question",
+      "area": "stack",
+      "question": "Is it fine if I build it with Node.js and a single SQLite database file, running on the shop laptop and opened in its web browser?",
+      "recommended": "Yes: Node.js (TypeScript) with SQLite, running locally on the shop laptop, opened at a local address in the browser; no internet hosting.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:31:25.044Z"
+    },
+    {
+      "n": 11,
+      "kind": "question",
+      "area": "security",
+      "question": "Should you be able to change an order after saving it, for example when a customer calls to move the pickup date?",
+      "recommended": "Yes: an 'Edit' button on each order; deleting an order is also possible but always asks 'Are you sure?' first.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:31:44.997Z"
+    },
+    {
+      "n": 12,
+      "kind": "question",
+      "area": "security",
+      "question": "Should the app ask for a password when you open it?",
+      "recommended": "No app password: it only accepts connections from the shop laptop itself, and the laptop's own login protects it.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:31:57.175Z"
+    },
+    {
+      "n": 13,
+      "kind": "question",
+      "area": "errors",
+      "question": "Here are 6 ways it could go wrong and what the app does in each; shall I use them as they are?",
+      "recommended": "Yes: (1) a required field is empty: nothing is saved, the field is highlighted, typed text is kept; (2) pickup date is in the past: rejected with a message; (3) phone has letters: rejected, only digits, spaces and + allowed; (4) Save is clicked twice: only one order is saved; (5) the database file cannot be written: a clear error is shown, the typed order stays on screen, nothing is half-saved; (6) the laptop restarts: all saved orders are still there.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:32:12.705Z"
+    },
+    {
+      "n": 14,
+      "kind": "question",
+      "area": "acceptance",
+      "question": "I wrote these checks from your answers; is anything missing?",
+      "recommended": "Accept as listed: happy path (a saved order appears in the list within a few seconds), list order, Picked up, Edit, Delete with confirmation, the 6 error cases, and a refused connection from another device.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:32:33.619Z"
+    },
+    {
+      "n": 15,
+      "kind": "question",
+      "area": "done",
+      "question": "What will you check by hand before calling version 1 finished?",
+      "recommended": "All 12 checks pass, and you take one real day of orders on the shop laptop and the list matches your paper notes; plus a one-page README on how to start the app and back up the database file.",
+      "answer": "ok",
+      "accepted_recommendation": true,
+      "at": "2026-10-16T10:32:49.568Z"
+    }
+  ],
+  "stop_reason": "complete"
+}

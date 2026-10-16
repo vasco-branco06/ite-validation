@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "T-001",
+      "title": "A saved order appears in the list",
+      "proves": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-017"
+      ],
+      "kind": "e2e",
+      "given": "The app is running with an empty database and the page is opened at 127.0.0.1 with no login",
+      "when": "The user fills in name \"Ana Silva\", phone \"+351 912 345 678\", cake \"Chocolate, 2 kg, Happy Birthday Ana\", a pickup date tomorrow and time 10:30, and clicks Save",
+      "then": [
+        "The page opened without any login or password prompt",
+        "Within 3 seconds the list shows one order with exactly those values",
+        "The database holds exactly one order"
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "The list sorts upcoming orders first and past orders below",
+      "proves": [
+        "R-004",
+        "R-005"
+      ],
+      "kind": "e2e",
+      "given": "Saved orders with pickup dates next Saturday, next Friday, and last Monday (none picked up)",
+      "when": "The page is opened",
+      "then": [
+        "The upcoming section lists Friday then Saturday",
+        "The last Monday order is in the bottom section"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Picked up greys an order out and moves it down",
+      "proves": [
+        "R-006"
+      ],
+      "kind": "e2e",
+      "given": "Two upcoming orders",
+      "when": "The user clicks \"Picked up\" on the first one and reloads the page",
+      "then": [
+        "That order is greyed out in the bottom section",
+        "The other order is still at the top",
+        "The database marks only the first order as picked up"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Editing the pickup date updates and re-sorts the order",
+      "proves": [
+        "R-007"
+      ],
+      "kind": "e2e",
+      "given": "Upcoming orders for Saturday (\"Ana\") and Sunday (\"Bruno\")",
+      "when": "The user clicks \"Edit\" on Ana's order, changes the date to the Monday after, and saves",
+      "then": [
+        "The list shows Ana's order with the new date below Bruno's",
+        "The database holds the new date and still exactly two orders"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "Delete asks first; Cancel keeps, confirm removes",
+      "proves": [
+        "R-008",
+        "R-009"
+      ],
+      "kind": "e2e",
+      "given": "One saved order",
+      "when": "The user clicks \"Delete\" and chooses Cancel, then clicks \"Delete\" again and confirms",
+      "then": [
+        "An \"Are you sure?\" confirmation appears each time",
+        "After Cancel the order is unchanged in the list and the database",
+        "After confirming the order is gone from the list and the database"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "An empty required field saves nothing and keeps the typed text",
+      "proves": [
+        "R-010"
+      ],
+      "kind": "e2e",
+      "given": "The form with phone, cake and pickup date filled in and the name left empty (repeated for each of the four required fields)",
+      "when": "The user clicks Save",
+      "then": [
+        "Nothing is saved",
+        "The empty field is highlighted",
+        "The other fields still hold what was typed"
+      ]
+    },
+    {
+      "id": "T-007",
+      "title": "A pickup date in the past is rejected",
+      "proves": [
+        "R-011"
+      ],
+      "kind": "e2e",
+      "given": "A fully filled form with a pickup date of yesterday",
+      "when": "The user clicks Save",
+      "then": [
+        "A message says the pickup date is in the past",
+        "The database still holds no order"
+      ]
+    },
+    {
+      "id": "T-008",
+      "title": "A phone number with letters is rejected",
+      "proves": [
+        "R-012"
+      ],
+      "kind": "e2e",
+      "given": "A fully filled form with phone \"91234abc\"",
+      "when": "The user clicks Save",
+      "then": [
+        "A message says the phone may contain only digits, spaces and +",
+        "Nothing is saved",
+        "The same form with phone \"+351 912 345 678\" is accepted"
+      ]
+    },
+    {
+      "id": "T-009",
+      "title": "Clicking Save twice saves one order",
+      "proves": [
+        "R-013"
+      ],
+      "kind": "e2e",
+      "given": "A fully filled valid form",
+      "when": "The user double-clicks Save",
+      "then": [
+        "The list shows exactly one order",
+        "The database holds exactly one order"
+      ]
+    },
+    {
+      "id": "T-010",
+      "title": "An unwritable database shows an error and keeps the form",
+      "proves": [
+        "R-014"
+      ],
+      "kind": "integration",
+      "given": "The app running with one saved order and the database made unwritable",
+      "when": "The user saves a valid new order",
+      "then": [
+        "The page shows a clear error",
+        "The form still holds the typed values",
+        "The database still holds only the first order"
+      ]
+    },
+    {
+      "id": "T-011",
+      "title": "Orders survive a restart",
+      "proves": [
+        "R-015"
+      ],
+      "kind": "integration",
+      "given": "Three saved orders, one of them marked picked up",
+      "when": "The app process is stopped and started again",
+      "then": [
+        "The list shows the same three orders with the same values and picked-up status"
+      ]
+    },
+    {
+      "id": "T-012",
+      "title": "Another device cannot open the app",
+      "proves": [
+        "R-016"
+      ],
+      "kind": "integration",
+      "given": "The app running",
+      "when": "A request is made to the laptop's network address (not 127.0.0.1) on the app's port",
+      "then": [
+        "The connection is refused",
+        "The server code opens no outbound network connection"
+      ]
+    },
+    {
+      "id": "T-013",
+      "title": "Today's orders count as upcoming and timed orders sort first",
+      "proves": [
+        "D-013",
+        "R-004",
+        "R-005",
+        "R-011"
+      ],
+      "kind": "assumption",
+      "given": "Orders for today 15:00, today with no time, today 09:00, and yesterday (not picked up)",
+      "when": "The page is opened, and a new order for today is saved",
+      "then": [
+        "The upcoming section lists today 09:00, today 15:00, then today with no time",
+        "Yesterday's order is in the bottom section",
+        "The new order for today is accepted"
+      ]
+    },
+    {
+      "id": "T-014",
+      "title": "One real day of orders matches the paper notes",
+      "proves": [
+        "R-002",
+        "R-003"
+      ],
+      "kind": "manual",
+      "given": "The app installed on the shop laptop",
+      "when": "The owner and employee enter one real day of orders while also writing them on paper",
+      "then": [
+        "At the end of the day every paper order is in the list exactly once, with the same details"
+      ]
+    },
+    {
+      "id": "T-015",
+      "title": "The README explains starting the app and backing up",
+      "proves": [
+        "R-018"
+      ],
+      "kind": "manual",
+      "given": "Only the README",
+      "when": "The owner follows it on the shop laptop",
+      "then": [
+        "The app starts and opens in the browser",
+        "The owner can copy the database file to a backup location"
+      ]
+    }
+  ]
+}
