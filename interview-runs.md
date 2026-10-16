@@ -42,3 +42,7 @@ Setup: Claude Code 2.1.293, default model, Windows 11. Each user turn is one `cl
 3. The stop offer's answer was not stored. Fixed in plugin commit 5d78bc2: `assume-rest` and `budget off` take `--answer`; start.md passes it. Unit-tested; not yet seen in a recorded run.
 4. Turn header counter was estimated (R3 showed 1/12 with 2 areas settled, then 2/12 twice). Fixed in 5d78bc2: start.md reads the count from coverage.json. Static test only; not yet seen in a recorded run.
 5. Compound questions joined with "and" (T-003, D-020). Fixed: P-001 rules 1 and 10, skill examples and question bank; guard test added.
+
+## Isolation note (added 2026-10-16)
+
+A probe on 2026-10-16 showed that `--setting-sources project,local --strict-mcp-config` does not keep the user-level `~/.claude/CLAUDE.md` out: its heading and two `@` import lines were in context. The imported files (the maintainer's preferences and map) were not expanded, but a session with the Read tool could open them. So batch 1 and batch 2 ran with that heading in context. No recorded reply showed preferences behaviour: replies followed the idea's language (R5, R6 and B2 English ideas got English replies), and none addressed the maintainer by name. The fix, used from 2026-10-16 on: also pass `--settings '{"claudeMdExcludes":["C:/Users/Admin/.claude/CLAUDE.md","**/.claude/CLAUDE.md"]}'`; with it, a probe reports no user CLAUDE.md and no import lines.
