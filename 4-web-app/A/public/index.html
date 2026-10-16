@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guestbook</title>
+  <style>
+    :root { --accent: #2563eb; --muted: #6b7280; --border: #e5e7eb; --error: #dc2626; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f9fafb; color: #111827; }
+    main { max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { margin-bottom: 1.5rem; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    label { display: block; font-weight: 600; margin-bottom: .25rem; font-size: .9rem; }
+    input, textarea { width: 100%; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: 6px; font: inherit; }
+    textarea { min-height: 90px; resize: vertical; }
+    .field { margin-bottom: 1rem; }
+    .error { color: var(--error); font-size: .85rem; min-height: 1em; margin-top: .2rem; }
+    button { background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: .6rem 1.2rem; font: inherit; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { border-bottom: 1px solid var(--border); padding: .9rem 0; display: flex; gap: 1rem; }
+    li:last-child { border-bottom: 0; }
+    .entry { flex: 1; min-width: 0; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    .message { margin: .35rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .delete { background: none; color: var(--error); padding: .2rem .4rem; align-self: flex-start; }
+    .empty { color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Guestbook</h1>
+
+  <form id="form" class="card" novalidate>
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" name="name" maxlength="100" required>
+      <div class="error" data-for="name"></div>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required>
+      <div class="error" data-for="email"></div>
+    </div>
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" maxlength="1000" required></textarea>
+      <div class="error" data-for="message"></div>
+    </div>
+    <button type="submit">Add entry</button>
+    <div class="error" data-for="form"></div>
+  </form>
+
+  <section class="card">
+    <h2>Entries (<span id="count">0</span>)</h2>
+    <ul id="list"></ul>
+  </section>
+</main>
+
+<script>
+  const form = document.getElementById('form');
+  const list = document.getElementById('list');
+  const count = document.getElementById('count');
+
+  function showErrors(errors = {}) {
+    form.querySelectorAll('.error').forEach((el) => {
+      el.textContent = errors[el.dataset.for] || '';
+    });
+  }
+
+  function render(entries) {
+    count.textContent = entries.length;
+    list.replaceChildren();
+    if (!entries.length) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'No entries yet — be the first!';
+      return list.append(li);
+    }
+    for (const e of entries) {
+      const li = document.createElement('li');
+      const body = document.createElement('div');
+      body.className = 'entry';
+      const strong = document.createElement('strong');
+      strong.textContent = e.name;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = `${e.email} · ${new Date(e.created_at + 'Z').toLocaleString()}`;
+      const msg = document.createElement('p');
+      msg.className = 'message';
+      msg.textContent = e.message;
+      body.append(strong, meta, msg);
+
+      const del = document.createElement('button');
+      del.className = 'delete';
+      del.textContent = 'Delete';
+      del.setAttribute('aria-label', `Delete entry by ${e.name}`);
+      del.onclick = async () => {
+        if (!confirm('Delete this entry?')) return;
+        await fetch(`/api/entries/${e.id}`, { method: 'DELETE' });
+        load();
+      };
+      li.append(body, del);
+      list.append(li);
+    }
+  }
+
+  async function load() {
+    const res = await fetch('/api/entries');
+    render(await res.json());
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const button = form.querySelector('button');
+    button.disabled = true;
+    showErrors();
+    try {
+      const res = await fetch('/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const data = await res.json();
+      if (!res.ok) return showErrors(data.errors || { form: data.error });
+      form.reset();
+      load();
+    } catch {
+      showErrors({ form: 'Could not reach the server' });
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  load();
+</script>
+</body>
+</html>
